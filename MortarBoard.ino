@@ -14,6 +14,7 @@
 #include "qr.c"
 #include "csrocks.c"
 #include "sudoku.c"
+#include "calvinmemes.c"
 
 #define COLOR_DEPTH 24                  // known working: 24, 48 - If the sketch uses type `rgb24` directly, COLOR_DEPTH must be 24
 const uint8_t kMatrixWidth = 64;        // known working: 16, 32, 48, 64
@@ -62,7 +63,7 @@ void randomizeStuff(int randNum) {
       show6();
       break;
     case 7:
-      show8();
+      show7();
       break;
     case 8:
       show8();
@@ -72,6 +73,9 @@ void randomizeStuff(int randNum) {
       break;
     case 10:
       show10();
+      break;
+    case 11:
+      show11();
       break;
     default:
       break;
@@ -161,6 +165,9 @@ void show2() {
   delay(STRING_DELAY);
   BLANK_SCREEN();
 
+  writeText(stopped, "Hi Dad!", BLUE, 30);
+  delay(STRING_DELAY);
+
   // (THIS IS QUENTIN)
   backgroundLayer.setBrightness(0);
   writeText(stopped, "", WHITE, 15);
@@ -170,6 +177,11 @@ void show2() {
   backgroundLayer.swapBuffers();
   fadeIn(100);
   delay(STRING_DELAY);
+  BLANK_SCREEN();
+
+  writeText(wrapForward, "Hi Audrey, Hi Greg!", RED, 20);
+  delay(STRING_DELAY);
+  writeText(stopped, "", WHITE, 15);
 }
 
 void show3() {
@@ -220,7 +232,7 @@ void show8() {
   writeText(stopped, "", WHITE, 0);
   BLANK_SCREEN();
   // C.S. Rocks!
-  showBitmap((const gimp64x64bitmap*)&csrocks, STRING_DELAY);
+  showBitmap((const gimp64x64bitmap*)&csrocks, STRING_DELAY*(2/3));
 }
 
 void show9() {
@@ -236,6 +248,14 @@ void show10() {
   // Calvin Seal
   showBitmap((const gimp64x64bitmap*)&sudoku, STRING_DELAY, 50);
 }
+
+void show11() {
+  writeText(bounceForward, "FRESH 2019 MEMES", BLACK, 33);
+  BLANK_SCREEN();
+  // Calvin MEMES
+  showBitmap((const gimp64x64bitmap*)&calvinmemes, STRING_DELAY, 85);
+}
+
 /// SETUP AND MAIN LOOP ///
 void setup() {
   matrix.addLayer(&backgroundLayer); 
@@ -243,10 +263,10 @@ void setup() {
   matrix.begin();
   matrix.setBrightness((bright*255/100));
   pinMode(led, OUTPUT);
-  randomSeed(97668374);
+  randomSeed(810532);
 }
 
 void loop() {
-  int randNum = random(0,11);
+  int randNum = random(0,12);
   randomizeStuff(randNum);
 }
