@@ -27,4 +27,6 @@ Note that you will also need [Teensyduino][3] installed.
 [3]:https://www.pjrc.com/teensy/td_download.html
 
 
-![My Mortarboard with everything installed][mortarboard.jpg]
+![My Mortarboard with everything installed](mortarboard.jpg)
+
+(Comic is [XKCD #74](https://xkcd.com/74/))
