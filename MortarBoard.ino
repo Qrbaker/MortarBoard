@@ -8,6 +8,8 @@
 #include "leroy.c"
 #include "ripstone.c"
 #include "qman.c"
+#include "qr.c"
+#include "csrocks.c"
 
 #define COLOR_DEPTH 24                  // known working: 24, 48 - If the sketch uses type `rgb24` directly, COLOR_DEPTH must be 24
 const uint8_t kMatrixWidth = 64;        // known working: 16, 32, 48, 64
@@ -22,18 +24,63 @@ const uint8_t kScrollingLayerOptions = (SM_SCROLLING_OPTIONS_NONE);
 SMARTMATRIX_ALLOCATE_BUFFERS(matrix, kMatrixWidth, kMatrixHeight, kRefreshDepth, kDmaBufferRows, kPanelType, kMatrixOptions);
 SMARTMATRIX_ALLOCATE_BACKGROUND_LAYER(backgroundLayer, kMatrixWidth, kMatrixHeight, COLOR_DEPTH, kBackgroundLayerOptions);
 SMARTMATRIX_ALLOCATE_SCROLLING_LAYER(scrollingLayer, kMatrixWidth, kMatrixHeight, COLOR_DEPTH, kScrollingLayerOptions);
+
 ///// COLORS /////
 rgb24 WHITE = {0xff, 0xff, 0xff};
 rgb24 GREEN = {0, 0xff, 0};
 rgb24 RED = {0xff, 0 ,0};
 rgb24 BLUE = {0, 0, 0xff};
+rgb24 GOLD = {0xfc, 0xd2, 0x16};
 rgb24 BLACK = {0,0,0};
 
-/////////////////////////////////////////////////////////////////////
+///// USEFUL CONSTANTS /////
 int STRING_DELAY = 5000;
 int led = 13;
 int bright = 30;
 
+
+/// SETUP AND MAIN LOOP ///
+void setup() {
+  matrix.addLayer(&backgroundLayer); 
+  matrix.addLayer(&scrollingLayer); 
+  matrix.begin();
+  matrix.setBrightness((bright*255/100));
+  pinMode(led, OUTPUT);
+
+  randomSeed(analogRead(25));
+}
+
+void loop() {
+  int randNum = random(0,9);
+  switch (randNum) {
+    case 1:
+      show1();
+      break;
+    case 2:
+      show2();
+      break;
+    case 3:
+      show3();
+      break;
+    case 4:
+      show4();
+      break;
+    case 5:
+      show6();
+      break;
+    case 7:
+      show8();
+      break;
+    case 8:
+      show8();
+      break;
+    default:
+      break;
+  }
+}
+
+
+/// UTILITIES ///
 void drawBitmap64(int16_t x, int16_t y, const gimp64x64bitmap* bitmap) {
   for(unsigned int i=0; i < bitmap->height; i++) {
     for(unsigned int j=0; j < bitmap->width; j++) {
@@ -44,14 +91,6 @@ void drawBitmap64(int16_t x, int16_t y, const gimp64x64bitmap* bitmap) {
       backgroundLayer.drawPixel(x + j, y + i, pixel);
     }
   }
-}
-
-void setup() {
-  matrix.addLayer(&backgroundLayer); 
-  matrix.addLayer(&scrollingLayer); 
-  matrix.begin();
-  matrix.setBrightness((bright*255/100));
-  pinMode(led, OUTPUT);
 }
 
 void fadeOut(int brightLevel=bright) {
@@ -104,7 +143,8 @@ void writeText(ScrollMode mode, const char* text, rgb24 textColor, int offSet, f
 }
 
 
-void loop() {
+/// ANIMATIONS ///
+void show1() {
   // CS IS THE BEST + Calvin Knight
   writeText(bounceForward, "CS is the BEST!", WHITE, 30);
   //scrollingLayer.stop();
@@ -112,7 +152,9 @@ void loop() {
   showBitmap((const gimp64x64bitmap*)&calvinknight, STRING_DELAY);
   delay(STRING_DELAY);
   scrollingLayer.stop();
+}
 
+void show2() {
   // HI MOM :D
   writeText(stopped, " Hi Mom!", WHITE, 15);
   backgroundLayer.setBrightness(255);
@@ -131,25 +173,51 @@ void loop() {
   backgroundLayer.swapBuffers();
   fadeIn(100);
   delay(STRING_DELAY);
+}
+
+void show3() {
   showBitmap((const gimp64x64bitmap*)&qman, STRING_DELAY, 15);
   delay(500);
   writeText(stopped, "(That was me)",WHITE, 10, font5x7);
   delay(STRING_DELAY);
   scrollingLayer.stop();
   delay(500);
-  
+}
+
+void show4() {
   writeText(wrapForward, "RESPECT THE BEARD", GREEN, 35);
   delay(5);
   showBitmap((const gimp64x64bitmap*)&leroy, STRING_DELAY, 15);
   writeText(stopped, "", WHITE, 15);
   delay(500);
+}
 
+void show5() {
+  writeText(wrapForward, "RESPECT THE BEARD", GREEN, 35);
+  delay(5);
+  showBitmap((const gimp64x64bitmap*)&leroy, STRING_DELAY, 15);
+  writeText(stopped, "", WHITE, 15);
+  delay(500);
+}
+
+void show6() {
   // Rip Calvin College
   showBitmap((const gimp64x64bitmap*)&ripstone, STRING_DELAY*(2/3), 40);
   delay(500);
 
-  writeText(wrapForward, "...AND WELCOME CALVIN UNIVERSITY!", RED, 30);
-  delay(1000);
-  showBitmap((const gimp64x64bitmap*)&wayfinder, STRING_DELAY);
-  delay(STRING_DELAY*3);
+  writeText(wrapForward, "...AND WELCOME CALVIN UNIVERSITY!", GOLD, 30);
+  delay(STRING_DELAY);
+  showBitmap((const gimp64x64bitmap*)&wayfinder, STRING_DELAY/2);
+  delay(STRING_DELAY*2);
+  writeText(stopped, "", WHITE, 15);
+}
+
+void show7() {
+  // Show QR code leading to repo
+  showBitmap((const gimp64x64bitmap*)&qr, STRING_DELAY*2);
+}
+
+void show8() {
+  // C.S. Rocks!
+  showBitmap((const gimp64x64bitmap*)&csrocks, STRING_DELAY);
 }
