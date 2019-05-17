@@ -1,5 +1,8 @@
 #include <SmartLEDShieldV4.h>  // comment out this line for if you're not using SmartLED Shield V4 hardware (this line needs to be before #include <SmartMatrix3.h>)
 #include <SmartMatrix3.h>
+#include <stdlib.h>
+#include <Entropy.h>
+
 
 #include "gimpbitmap.h"
 #include "wayfinder.c"
@@ -10,6 +13,7 @@
 #include "qman.c"
 #include "qr.c"
 #include "csrocks.c"
+#include "sudoku.c"
 
 #define COLOR_DEPTH 24                  // known working: 24, 48 - If the sketch uses type `rgb24` directly, COLOR_DEPTH must be 24
 const uint8_t kMatrixWidth = 64;        // known working: 16, 32, 48, 64
@@ -39,20 +43,9 @@ int led = 13;
 int bright = 30;
 
 
-/// SETUP AND MAIN LOOP ///
-void setup() {
-  matrix.addLayer(&backgroundLayer); 
-  matrix.addLayer(&scrollingLayer); 
-  matrix.begin();
-  matrix.setBrightness((bright*255/100));
-  pinMode(led, OUTPUT);
-
-  randomSeed(analogRead(25));
-}
-
-void loop() {
-  int randNum = random(0,9);
-  switch (randNum) {
+/// UTILITIES ///
+void randomizeStuff(int randNum) {
+   switch (randNum) {
     case 1:
       show1();
       break;
@@ -74,13 +67,17 @@ void loop() {
     case 8:
       show8();
       break;
+    case 9:
+      show9();
+      break;
+    case 10:
+      show10();
+      break;
     default:
       break;
   }
 }
 
-
-/// UTILITIES ///
 void drawBitmap64(int16_t x, int16_t y, const gimp64x64bitmap* bitmap) {
   for(unsigned int i=0; i < bitmap->height; i++) {
     for(unsigned int j=0; j < bitmap->width; j++) {
@@ -213,11 +210,43 @@ void show6() {
 }
 
 void show7() {
+  writeText(stopped, "", WHITE, 0);
+  BLANK_SCREEN();
   // Show QR code leading to repo
   showBitmap((const gimp64x64bitmap*)&qr, STRING_DELAY*2);
 }
 
 void show8() {
+  writeText(stopped, "", WHITE, 0);
+  BLANK_SCREEN();
   // C.S. Rocks!
   showBitmap((const gimp64x64bitmap*)&csrocks, STRING_DELAY);
+}
+
+void show9() {
+  writeText(stopped, "", WHITE, 0);
+  BLANK_SCREEN();
+  // Calvin Seal
+  showBitmap((const gimp64x64bitmap*)&calvinseal, STRING_DELAY, 50);
+}
+
+void show10() {
+  writeText(stopped, "", WHITE, 0);
+  BLANK_SCREEN();
+  // Calvin Seal
+  showBitmap((const gimp64x64bitmap*)&sudoku, STRING_DELAY, 50);
+}
+/// SETUP AND MAIN LOOP ///
+void setup() {
+  matrix.addLayer(&backgroundLayer); 
+  matrix.addLayer(&scrollingLayer); 
+  matrix.begin();
+  matrix.setBrightness((bright*255/100));
+  pinMode(led, OUTPUT);
+  randomSeed(97668374);
+}
+
+void loop() {
+  int randNum = random(0,11);
+  randomizeStuff(randNum);
 }
